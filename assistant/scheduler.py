@@ -35,8 +35,8 @@ class AiriScheduler:
         self.last_round_id = ""
 
         # Bot config
-        self.num_blocks_to_play = 15
-        self.bet_per_block = 0.00001
+        self.num_blocks_to_play = 24
+        self.bet_per_block = 0.000005
         self.bet_amount_eth = self.bet_per_block * self.num_blocks_to_play
         
         # Win/Loss & P&L tracking
@@ -227,8 +227,22 @@ class AiriScheduler:
                     
                     # Deploy when 10-15 seconds remaining (late deploy strategy)
                     if 5 <= time_remaining <= 15:
-                        # Pick 10 least crowded blocks (API returns 0-24, contract needs 0-24)
-                        blocks_to_play = select_best_blocks(self.current_round, self.num_blocks_to_play)
+                        # Extract the previous winning block from global stats
+                        prev_winner_block = -1
+                        try:
+                            stats = self.global_stats.get("stats", {})
+                            if stats:
+                                # The winningBlock string looks like "Block X (YY%)" or just "X"
+                                win_str = str(stats.get("winningBlock", ""))
+                                import re
+                                match = re.search(r'\d+', win_str)
+                                if match:
+                                    prev_winner_block = int(match.group())
+                        except Exception as e:
+                            pass
+                            
+                        # Pick 24 blocks (API returns 0-24, contract needs 0-24)
+                        blocks_to_play = select_best_blocks(self.current_round, self.num_blocks_to_play, prev_winner_block)
                         
                         # Visually log 1-25 so the user doesn't panic
                         visual_blocks = [b + 1 for b in blocks_to_play]

@@ -29,26 +29,20 @@ def calculate_ev(price_data: dict, current_round: dict, total_bet_eth: float) ->
         print(f"[Strategy] EV calculation error: {e}")
         return -1.0
 
-def select_best_blocks(current_round: dict, num_blocks: int = 10) -> list[int]:
+def select_best_blocks(current_round: dict, num_blocks: int = 10, prev_winner_block: int = -1) -> list[int]:
     """
-    Select the least crowded blocks for maximum profit share.
-    
-    All 25 blocks have equal 1/25 win probability (Chainlink VRF uniform random).
-    Picking 10 blocks = 10/25 = 40% chance one of ours is the winner.
-    
-    Strategy: Choose the blocks with the LEAST total ETH deployed by others.
-    If our block wins and we're the only/biggest miner on it, our proportional 
-    payout from the claimablePool is maximized.
+    Select blocks by excluding the previous round's winning block.
     """
-    blocks = current_round.get("blocks", [])
-    if not blocks:
-        # If no grid data, pick 10 random blocks (blocks are 1-25)
-        import random
-        return random.sample(range(1, 26), min(num_blocks, 25))
+    import random
     
-    # Sort blocks by total deployed ETH (ascending = least crowded first)
-    sorted_blocks = sorted(blocks, key=lambda b: float(b.get("deployed", "0")))
+    # Available blocks are 1 to 25
+    available_blocks = set(range(1, 26))
     
-    # Take the least crowded N blocks
-    selected_ids = [b["id"] for b in sorted_blocks[:num_blocks]]
-    return selected_ids
+    # Remove the previous winner if it's valid
+    if 1 <= prev_winner_block <= 25:
+        available_blocks.discard(prev_winner_block)
+        
+    available_blocks = list(available_blocks)
+    
+    # Take random N blocks from the remaining pool
+    return random.sample(available_blocks, min(num_blocks, len(available_blocks)))
