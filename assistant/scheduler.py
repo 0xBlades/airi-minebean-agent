@@ -48,7 +48,7 @@ class AiriScheduler:
         self.mining_active = True
         
         # Auto-claim config
-        self.auto_claim_eth_threshold = 0.001  # Claim automatically if pending ETH >= 0.001
+        self.auto_claim_eth_threshold = 0.0005  # Claim automatically if pending ETH >= 0.0005
 
     def _emit(self, event_type: str, data):
         """Emit an event to the UI callback."""
@@ -75,7 +75,10 @@ class AiriScheduler:
             
             # Log winning block result
             if settled:
-                winning_block = settled.get("winningBlock", "?")
+                # Visually display +1 so user sees 1-25 instead of 0-24
+                winning_block_id = settled.get("winningBlock", "?")
+                winning_block = str(int(winning_block_id) + 1) if winning_block_id != "?" else "?"
+                
                 total_winnings = settled.get("totalWinnings", "0")
                 top_miner = settled.get("topMiner", "")
                 beanpot_hit = settled.get("beanpotAmount", "0") != "0"
@@ -224,10 +227,12 @@ class AiriScheduler:
                     
                     # Deploy when 10-15 seconds remaining (late deploy strategy)
                     if 5 <= time_remaining <= 15:
-                        # Pick 10 least crowded blocks
+                        # Pick 10 least crowded blocks (API returns 0-24, contract needs 0-24)
                         blocks_to_play = select_best_blocks(self.current_round, self.num_blocks_to_play)
                         
-                        self._emit("minebean_ai_log", f"🚀 Deploying {self.bet_amount_eth} ETH → blocks {blocks_to_play}")
+                        # Visually log 1-25 so the user doesn't panic
+                        visual_blocks = [b + 1 for b in blocks_to_play]
+                        self._emit("minebean_ai_log", f"🚀 Deploying {self.bet_amount_eth} ETH → blocks {visual_blocks}")
                         
                         # Execute on-chain
                         tx_hash = self.web3.deploy(blocks_to_play, self.bet_amount_eth)

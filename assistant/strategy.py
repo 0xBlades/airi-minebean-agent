@@ -49,6 +49,6 @@ def select_best_blocks(current_round: dict, num_blocks: int = 10) -> list[int]:
     # Sort blocks by total deployed ETH (ascending = least crowded first)
     sorted_blocks = sorted(blocks, key=lambda b: float(b.get("deployed", "0")))
     
-    # Take the least crowded N blocks and shift ID from 0-24 to 1-25
-    selected_ids = [(int(b["id"]) + 1) for b in sorted_blocks[:num_blocks]]
+    # Take the least crowded N blocks
+    selected_ids = [b["id"] for b in sorted_blocks[:num_blocks]]
     return selected_ids
