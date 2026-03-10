@@ -237,7 +237,7 @@ class AiriScheduler:
                                 import re
                                 match = re.search(r'\d+', win_str)
                                 if match:
-                                    prev_winner_block = int(match.group())
+                                    prev_winner_block = int(match.group()) - 1
                         except Exception as e:
                             pass
                             
