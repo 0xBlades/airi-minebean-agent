@@ -149,7 +149,7 @@ class AiriScheduler:
             })
             
             # Check for Auto-Claim ETH
-            pending_eth = float(rewards.get("pendingEthFormatted", "0"))
+            pending_eth = float(rewards.get("pendingETHFormatted", "0"))
             if pending_eth >= self.auto_claim_eth_threshold:
                 self._emit("minebean_ai_log", f"💰 Auto-Claiming {pending_eth:.4f} ETH...")
                 tx = self.web3.claim_eth()
