@@ -46,6 +46,9 @@ class AiriScheduler:
         self.total_eth_won = 0.0
         self.total_bean_earned = 0.0
         self.mining_active = True
+        
+        # Auto-claim config
+        self.auto_claim_eth_threshold = 0.001  # Claim automatically if pending ETH >= 0.001
 
     def _emit(self, event_type: str, data):
         """Emit an event to the UI callback."""
@@ -141,6 +144,15 @@ class AiriScheduler:
                 "eth_balance": eth_bal,
                 "rewards": rewards
             })
+            
+            # Check for Auto-Claim ETH
+            pending_eth = float(rewards.get("pendingEthFormatted", "0"))
+            if pending_eth >= self.auto_claim_eth_threshold:
+                self._emit("minebean_ai_log", f"💰 Auto-Claiming {pending_eth:.4f} ETH...")
+                tx = self.web3.claim_eth()
+                if tx:
+                    self._emit("minebean_ai_log", f"✅ Claimed ETH! TX: {tx[:16]}...")
+                    self.total_eth_spent = 0.0  # Reset session P&L logic if desired, or keep accumulating
         else:
             self._emit("minebean_wallet_update", {"error": "No wallet loaded"})
 
