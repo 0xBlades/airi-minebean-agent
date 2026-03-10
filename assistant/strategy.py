@@ -42,9 +42,9 @@ def select_best_blocks(current_round: dict, num_blocks: int = 10) -> list[int]:
     """
     blocks = current_round.get("blocks", [])
     if not blocks:
-        # If no grid data, pick 10 random blocks
+        # If no grid data, pick 10 random blocks (blocks are 1-25)
         import random
-        return random.sample(range(25), min(num_blocks, 25))
+        return random.sample(range(1, 26), min(num_blocks, 25))
     
     # Sort blocks by total deployed ETH (ascending = least crowded first)
     sorted_blocks = sorted(blocks, key=lambda b: float(b.get("deployed", "0")))
