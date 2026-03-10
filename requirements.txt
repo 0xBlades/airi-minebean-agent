@@ -3,3 +3,5 @@ PyQt6-WebEngine>=6.6.0
 requests>=2.31.0
 python-dotenv>=1.0.0
 schedule>=1.2.0
+web3>=7.0.0
+sseclient-py>=1.8.0
