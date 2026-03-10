@@ -35,11 +35,11 @@ def select_best_blocks(current_round: dict, num_blocks: int = 10, prev_winner_bl
     """
     import random
     
-    # Available blocks are 1 to 25
-    available_blocks = set(range(1, 26))
+    # Available blocks are 0 to 24
+    available_blocks = set(range(0, 25))
     
     # Remove the previous winner if it's valid
-    if 1 <= prev_winner_block <= 25:
+    if 0 <= prev_winner_block <= 24:
         available_blocks.discard(prev_winner_block)
         
     available_blocks = list(available_blocks)
