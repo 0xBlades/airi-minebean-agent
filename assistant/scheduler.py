@@ -35,7 +35,7 @@ class AiriScheduler:
         self.last_round_id = ""
 
         # Bot config
-        self.num_blocks_to_play = 20
+        self.num_blocks_to_play = 15
         self.bet_per_block = 0.00001
         self.bet_amount_eth = self.bet_per_block * self.num_blocks_to_play
         
