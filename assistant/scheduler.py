@@ -37,7 +37,7 @@ class AiriScheduler:
         # Bot config
         self.num_blocks_to_play = 24
         self.bet_per_block = 0.000005
-        self.bet_amount_eth = self.bet_per_block * self.num_blocks_to_play
+        self.bet_amount_eth = round(self.bet_per_block * self.num_blocks_to_play, 18)
         
         # Win/Loss & P&L tracking
         self.rounds_played = 0
