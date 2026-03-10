@@ -468,10 +468,14 @@ class AiriMainWindow(QMainWindow):
         self.eth_bal_label.setText(f"ETH: {eth_bal:.5f}")
 
         rewards = data.get("rewards", {})
-        pending_eth = rewards.get("pendingETHFormatted", "0.0")
-        pending_bean = rewards.get("pendingBEAN", {}).get("netFormatted", "0.0")
-        self.bean_bal_label.setText(f"BEAN: {pending_bean}")
-        self.pending_label.setText(f"Pending ETH: {pending_eth} | Pending BEAN: {pending_bean}")
+        pending_eth = float(rewards.get("pendingETHFormatted", "0.0"))
+        pending_bean = float(rewards.get("pendingBEAN", {}).get("netFormatted", "0.0"))
+        self.bean_bal_label.setText(f"BEAN: {pending_bean:.2f}")
+        
+        # Update Round History Stats with True API values
+        self.history_bean.setText(f"{pending_bean:.2f}")
+        self.history_pnl.setText(f"{pending_eth:.4f} ETH")
+        self.history_pnl.setStyleSheet("color: #34d399; font-size: 16px; font-weight: 800;")
 
     def _update_round_ui(self, data: dict):
         """Update round/beanpot info in the UI."""
@@ -491,19 +495,9 @@ class AiriMainWindow(QMainWindow):
     def _update_winrate_ui(self, data: dict):
         """Update the Round History stats."""
         played = data.get("played", 0)
-        total_bean = data.get("total_bean", 0.0)
-        total_pnl = data.get("total_pnl", 0.0)
         
         # Round history card
         self.rounds_played_label.setText(f"{played} rounds played")
-        
-        self.history_bean.setText(f"{total_bean:.2f}")
-        
-        pnl_sign = "+" if total_pnl >= 0 else ""
-        pnl_color = "#34d399" if total_pnl >= 0 else "#f87171"
-        self.history_pnl.setText(f"{pnl_sign}{total_pnl:.4f} ETH")
-        self.history_pnl.setStyleSheet(f"color: {pnl_color}; font-size: 16px; font-weight: 800;")
-
     def _toggle_mining(self):
         """Toggle mining on/off."""
         if not hasattr(self, 'scheduler') or not self.scheduler:
